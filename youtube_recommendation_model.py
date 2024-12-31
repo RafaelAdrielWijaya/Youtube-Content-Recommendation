@@ -337,6 +337,23 @@ sentiment_df = pd.DataFrame(sentiment_results)
 # Display the sentiment DataFrame
 print(sentiment_df)
 
+merged_df = pd.merge(merged_df, sentiment_df, on='video_id', how='left')
+def categorize_sentiment(row):
+    if row['positive_percentage'] > row['negative_percentage'] and row['positive_percentage'] > row['neutral_percentage']:
+        return 'positive'
+    elif row['negative_percentage'] > row['positive_percentage'] and row['negative_percentage'] > row['neutral_percentage']:
+        return 'negative'
+    else:
+        return 'neutral'
+
+merged_df['sentiment'] = merged_df.apply(categorize_sentiment, axis=1)
+
+
+sentiment_counts = merged_df['sentiment'].value_counts()
+plt.pie(sentiment_counts, labels=sentiment_counts.index, autopct='%1.1f%%')
+plt.title('Sentiment Distribution')
+plt.show()
+
 """# 3. Feature Engineering
 
 ## 3.1 Display sentiment DataFrame
